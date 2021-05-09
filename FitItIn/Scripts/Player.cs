@@ -31,18 +31,6 @@ public class Player : MonoBehaviour
     
     void Update()
     {
-        /*var xScale = Input.GetAxis("Horizontal") * Time.deltaTime * scaleMultiplier;
-        if ((xScale > 0 && transform.localScale.x < maxXScale) || (xScale < 0 && transform.localScale.x > minScale))
-        {
-            transform.localScale += new Vector3(xScale, 0, 0);
-        }
-
-        var yScale = Input.GetAxis("Vertical") * Time.deltaTime * scaleMultiplier;
-        if ((yScale > 0 && transform.localScale.y < maxYScale) || (yScale < 0 && transform.localScale.y > minScale))
-        {
-            transform.localScale += new Vector3(0, yScale, 0);
-        }*/
-
         var x = Input.GetAxis("Horizontal");
         var smoothnessMultiplier = x != 0 ? acceleration : deceleration;
         float newX = Mathf.Lerp(rigidbody2d.velocity.x, x * velocity, Time.deltaTime * smoothnessMultiplier);
