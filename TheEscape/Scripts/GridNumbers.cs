@@ -16,9 +16,14 @@ public class GridNumbers : MonoBehaviour
         style.fixedWidth = 1;
         style.alignment = TextAnchor.MiddleCenter;
         style.richText = true;
-        for (int i = -GridSize.x + 2; i < GridSize.x - 1; i++)
-            for (int j = -GridSize.y + 2; j < GridSize.y - 1; j++)
+
+        for (float i = -(GridSize.x/2f + 0.5f); i <= GridSize.x/2f + 0.5; i += 1)
+        {
+            for (float j = -(GridSize.y/2f + 0.5f); j <= GridSize.y/2f + 0.5f; j += 1)
+            {
                 Handles.Label(new Vector3(i, j, 0), "<color=red>" + i + ", " + j + "</color>", style);
+            }
+        }
     }
 
     [ContextMenu("GetGridSize")]

@@ -46,6 +46,7 @@ public class CamButton : MonoBehaviour
             audioSource.Stop();
             cameraOff = false;
             audioSource.PlayOneShot(press);
+            cameraTimer = 0;
         }
     }
 
