@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CamButton : MonoBehaviour
 {
-    [SerializeField] GameObject cameraVision;
+    [SerializeField] GameObject[] cameraVisions;
     [SerializeField] AudioClip press;
     [SerializeField] float totalOffTime;
     [SerializeField] Sprite notPressed;
@@ -19,6 +20,26 @@ public class CamButton : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
+
+        CharacterMovement.OnDied += ResetCameras;
+        EscapeSensor.OnWin += TurnCameraOff;
+    }
+
+    private void TurnCameraOff()
+    {
+        audioSource.Stop();
+        foreach (GameObject cameraVision in cameraVisions)
+            cameraVision.SetActive(false);
+    }
+
+    private void ResetCameras()
+    {
+        foreach (GameObject cameraVision in cameraVisions)
+            cameraVision.SetActive(true);
+        cameraOff = true;
+        cameraTimer = 0;
+        audioSource.Stop();
+        spriteRenderer.sprite = notPressed;
     }
 
     void Update()
@@ -29,7 +50,8 @@ public class CamButton : MonoBehaviour
             if(cameraTimer >= totalOffTime)
             {
                 cameraOff = false;
-                cameraVision?.SetActive(true);
+                foreach(GameObject cameraVision in cameraVisions)
+                    cameraVision.SetActive(true);
                 spriteRenderer.sprite = notPressed;
                 audioSource.Stop();
             }
@@ -42,7 +64,8 @@ public class CamButton : MonoBehaviour
         if (character != null)
         {
             spriteRenderer.sprite = pressed;
-            cameraVision?.SetActive(false);
+            foreach(GameObject cameraVision in cameraVisions)
+                cameraVision.SetActive(false);
             audioSource.Stop();
             cameraOff = false;
             audioSource.PlayOneShot(press);
@@ -59,5 +82,11 @@ public class CamButton : MonoBehaviour
             cameraTimer = 0;
             audioSource.Play();
         }
+    }
+
+    private void OnDestroy()
+    {
+        CharacterMovement.OnDied -= ResetCameras;
+        EscapeSensor.OnWin -= TurnCameraOff;
     }
 }

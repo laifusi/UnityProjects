@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,8 +15,10 @@ public class CharacterMovement : MonoBehaviour
     float vertical;
     bool caught;
     List<Vector2> movements = new List<Vector2>();
-    Vector2 startTouch;
-    bool drag;
+    private Vector2 startTouch;
+    private bool drag;
+
+    public static Action OnDied;
 
     void Start()
     {
@@ -29,7 +32,7 @@ public class CharacterMovement : MonoBehaviour
         {
             moving = Mathf.Abs(rigidbody2d.velocity.x) > 0.5f || Mathf.Abs(rigidbody2d.velocity.y) > 0.5f;
 
-            #region Standard Controls
+            #region Standalone Controls
             if (Input.GetButtonDown("MoveRight"))
             {
                 movements.Add(new Vector2(1, 0));
@@ -131,13 +134,19 @@ public class CharacterMovement : MonoBehaviour
             movements.RemoveAt(0);
         }
         caught = true;
+        Time.timeScale = 0;
 
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSecondsRealtime(1.5f);
 
+        Time.timeScale = 1;
         transform.position = startPosition;
         caught = false;
         var inventory = GetComponent<Inventory>();
         if (inventory.HasKey())
             inventory.ReturnKey();
+
+        yield return new WaitForSecondsRealtime(0.1f);
+
+        OnDied?.Invoke();
     }
 }

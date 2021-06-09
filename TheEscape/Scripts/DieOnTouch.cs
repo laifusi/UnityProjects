@@ -15,12 +15,6 @@ public class DieOnTouch : MonoBehaviour
                 audioSource.Play();
             }
             character.Die();
-
-            var guard = GetComponent<GuardPatrol>();
-            if (guard != null)
-            {
-                guard.InmateCaught();
-            }
         }
     }
 }

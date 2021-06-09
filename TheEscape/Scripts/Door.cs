@@ -1,10 +1,26 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Door : MonoBehaviour
 {
     [SerializeField] AudioClip lockedSound;
+
+    private AudioSource audioSource;
+    private Collider2D col2D;
+    private SpriteRenderer spriteRenderer;
+    private Animator animator;
+
+    private void Start()
+    {
+        CharacterMovement.OnDied += ResetDoor;
+
+        audioSource = GetComponent<AudioSource>();
+        col2D = GetComponent<Collider2D>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        animator = GetComponent<Animator>();
+    }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -14,16 +30,26 @@ public class Door : MonoBehaviour
             if (inventory.HasKey())
             {
                 //Open the door
-                GetComponent<AudioSource>().Play();
-                GetComponent<Collider2D>().enabled = false;
-                GetComponentInChildren<SpriteRenderer>().enabled = false;
-                enabled = false;
+                audioSource.Play();
+                col2D.enabled = false;
+                spriteRenderer.enabled = false;
             }
             else
             {
-                GetComponent<Animator>()?.SetTrigger("NoKey");
-                GetComponent<AudioSource>().PlayOneShot(lockedSound);
+                animator?.SetTrigger("NoKey");
+                audioSource.PlayOneShot(lockedSound);
             }
         }
+    }
+
+    private void ResetDoor()
+    {
+        col2D.enabled = true;
+        spriteRenderer.enabled = true;
+    }
+
+    private void OnDestroy()
+    {
+        CharacterMovement.OnDied -= ResetDoor;
     }
 }
