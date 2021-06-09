@@ -11,6 +11,9 @@ public class GridNumbers : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (GridSize.x == 0 || GridSize.y == 0)
+            return;
+
         GUIStyle style = new GUIStyle();
         style.fixedHeight = 1;
         style.fixedWidth = 1;
