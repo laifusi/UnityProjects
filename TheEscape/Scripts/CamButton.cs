@@ -10,11 +10,14 @@ public class CamButton : MonoBehaviour
     [SerializeField] float totalOffTime;
     [SerializeField] Sprite notPressed;
     [SerializeField] Sprite pressed;
+    [SerializeField] CamButton[] otherCamButtons;
 
     bool cameraOff;
     float cameraTimer;
     SpriteRenderer spriteRenderer;
     AudioSource audioSource;
+
+    public Action<bool> OnCameraButton;
 
     void Start()
     {
@@ -23,6 +26,20 @@ public class CamButton : MonoBehaviour
 
         CharacterMovement.OnDied += ResetCameras;
         EscapeSensor.OnWin += TurnCameraOff;
+
+        if (otherCamButtons == null)
+            return;
+
+        foreach(CamButton camButton in otherCamButtons)
+        {
+            camButton.OnCameraButton += OtherButtonPressed;
+        }
+    }
+
+    private void OtherButtonPressed(bool camOff)
+    {
+        cameraTimer = 0;
+        cameraOff = camOff;
     }
 
     private void TurnCameraOff()
@@ -36,7 +53,7 @@ public class CamButton : MonoBehaviour
     {
         foreach (GameObject cameraVision in cameraVisions)
             cameraVision.SetActive(true);
-        cameraOff = true;
+        cameraOff = false;
         cameraTimer = 0;
         audioSource.Stop();
         spriteRenderer.sprite = notPressed;
@@ -70,6 +87,8 @@ public class CamButton : MonoBehaviour
             cameraOff = false;
             audioSource.PlayOneShot(press);
             cameraTimer = 0;
+
+            OnCameraButton?.Invoke(cameraOff);
         }
     }
 
@@ -81,6 +100,8 @@ public class CamButton : MonoBehaviour
             cameraOff = true;
             cameraTimer = 0;
             audioSource.Play();
+
+            OnCameraButton?.Invoke(cameraOff);
         }
     }
 
@@ -88,5 +109,13 @@ public class CamButton : MonoBehaviour
     {
         CharacterMovement.OnDied -= ResetCameras;
         EscapeSensor.OnWin -= TurnCameraOff;
+
+        if (otherCamButtons == null)
+            return;
+
+        foreach (CamButton camButton in otherCamButtons)
+        {
+            camButton.OnCameraButton -= OtherButtonPressed;
+        }
     }
 }
